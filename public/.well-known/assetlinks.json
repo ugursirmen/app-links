@@ -1,0 +1,12 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "grand-app",
+            "package_name": "com.grandlabs.grand",
+            "sha256_cert_fingerprints": []
+        }
+    }
+]
