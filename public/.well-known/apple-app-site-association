@@ -1,5 +1,19 @@
 {
-    "applinks": {},
+    "applinks": {
+        "details": [
+            {
+                "appIDs": [
+                    "TNBQ4JGTU6.com.grandlabs.grand"
+                ],
+                "components": [
+                    {
+                        "/": "/*",
+                        "comment": "For all paths"
+                    }
+                ]
+            }
+        ]
+    },
     "webcredentials": {
         "apps": [
             "TNBQ4JGTU6.com.grandlabs.grand"
