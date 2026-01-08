@@ -1,66 +1,84 @@
+"use client";
+
+import { useEffect, useState, Suspense } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import styles from "./page.module.css";
 
-export default function Home() {
+interface AppSettings {
+  app_store_url: string;
+  play_store_url: string;
+}
+
+function HomeContent() {
+  const [settings, setSettings] = useState<AppSettings | null>(null);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    fetch("https://litmxvmpeyyyvwjdrncd.supabase.co/storage/v1/object/public/app/settings.json")
+      .then((res) => res.json())
+      .then((data) => setSettings(data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  const handleOpenGrand = () => {
+    const queryString = searchParams.toString();
+    const deepLinkPath = pathname === "/" ? "home" : pathname.startsWith("/") ? pathname.substring(1) : pathname;
+    const finalDeepLink = `grand://${deepLinkPath}${queryString ? "?" + queryString : ""}`;
+
+    const userAgent = navigator.userAgent || navigator.vendor;
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+    const isAndroid = /Android/.test(userAgent);
+    const storeUrl = isIOS ? settings?.app_store_url : isAndroid ? settings?.play_store_url : null;
+
+    const timer = setTimeout(() => {
+      if (document.hasFocus() && storeUrl) {
+        window.location.replace(storeUrl);
+      }
+    }, 2500);
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = finalDeepLink;
+    document.body.appendChild(iframe);
+    
+    setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+    }, 500);
+
+    window.onblur = () => clearTimeout(timer);
+  };
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
+        <Image src="/icon.png" alt="Grand App" width={100} height={100} priority />
         <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <h1>Welcome to Grand</h1>
+          <p>Trade 100+ Assets Anytime, Instantly.</p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        <button
+          onClick={handleOpenGrand}
+          style={{ 
+            width: 300, height: 60, fontSize: 20, backgroundColor: '#FFB9DF', 
+            color: '#0B051D', cursor: 'pointer', border: 'none', 
+            borderRadius: '8px', fontWeight: 'bold' 
+          }}
+        >
+          Open Grand
+        </button>
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   );
 }
