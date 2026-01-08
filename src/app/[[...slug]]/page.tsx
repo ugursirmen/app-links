@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import styles from "./page.module.css";
+import styles from "../[[...slug]]/page.module.css";
 
 interface AppSettings {
   app_store_url: string;
@@ -36,7 +36,7 @@ function HomeContent() {
       if (document.hasFocus() && storeUrl) {
         window.location.replace(storeUrl);
       }
-    }, 2500);
+    }, 1500);
 
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
